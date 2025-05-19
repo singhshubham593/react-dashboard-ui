@@ -1,40 +1,58 @@
-import { useState } from "react";
-import { USERS } from "../data/users";
-import { Input } from "../components/ui/input";
+import React, { useState } from "react";
 
-export default function DataTable() {
-  const [search, setSearch] = useState("");
-  const filteredUsers = USERS.filter(user =>
-    `${user.name} ${user.email} ${user.role}`.toLowerCase().includes(search.toLowerCase())
-  );
+const DataTable = ({ data, search }) => {
+  const [sortBy, setSortBy] = useState("name");
+  const [asc, setAsc] = useState(true);
+
+  const handleSort = (field) => {
+    if (sortBy === field) setAsc(!asc);
+    else {
+      setSortBy(field);
+      setAsc(true);
+    }
+  };
+
+  const filteredData = data
+    .filter((item) =>
+      `${item.name} ${item.email} ${item.role}`.toLowerCase().includes(search)
+    )
+    .sort((a, b) => {
+      const valA = a[sortBy].toLowerCase();
+      const valB = b[sortBy].toLowerCase();
+      if (valA < valB) return asc ? -1 : 1;
+      if (valA > valB) return asc ? 1 : -1;
+      return 0;
+    });
 
   return (
-    <div className="bg-white p-4 rounded shadow">
-      <Input
-        placeholder="Search by name, email, or role"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-4"
-      />
-
-      <table className="w-full text-left">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-2">Name</th>
-            <th className="p-2">Email</th>
-            <th className="p-2">Role</th>
+    <div className="overflow-auto">
+      <table className="min-w-full bg-white border rounded">
+        <thead>
+          <tr className="bg-gray-100">
+            {['name', 'email', 'role'].map((col) => (
+              <th
+                key={col}
+                className="p-2 text-left cursor-pointer hover:underline"
+                onClick={() => handleSort(col)}
+              >
+                {col.charAt(0).toUpperCase() + col.slice(1)}
+                {sortBy === col ? (asc ? ' ↑' : ' ↓') : ''}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {filteredUsers.map((user) => (
-            <tr key={user.id} className="border-b">
-              <td className="p-2">{user.name}</td>
-              <td className="p-2">{user.email}</td>
-              <td className="p-2">{user.role}</td>
+          {filteredData.map((item) => (
+            <tr key={item.id} className="border-t hover:bg-gray-50">
+              <td className="p-2">{item.name}</td>
+              <td className="p-2">{item.email}</td>
+              <td className="p-2">{item.role}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
-}
+};
+
+export default DataTable;
