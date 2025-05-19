@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
+import Reports from "./pages/Reports";
 
 const App = () => {
   return (
@@ -11,6 +12,7 @@ const App = () => {
         <main className="flex-1 p-6">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/reports" element={<Reports />} />
           </Routes>
         </main>
       </div>
